@@ -4,13 +4,28 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace Demo
 {
     class Program
     {
+
+        #region 应用程序配置
+      
+
+
+        #endregion
+      
         static void Main(string[] args)
         {
+            /*
+       从app.config(应用配置文件)中读取连接字符串
+       1.需要导入System.Configruation.dll文件
+       2.引入System.Configruation命名空间
+       3.使用ConfigruationManager.ConnectionString["strConn"].ToString()来读取字符串
+           */
+            string strConn = ConfigurationManager.ConnectionStrings["strConn"].ToString();
             #region 连接字符串
 
             #endregion
@@ -20,19 +35,17 @@ namespace Demo
              *Integrated Security=SSPI:采用windows身份认证模式(集成安全)
              2.SQL server身份验证
              需要指定用户名和密码
-
              */
-            string strConn = "Data Source=HP201-1;Initial Catalog=Student;Integrated Security=SSPI;";
+            /*string strConn = "Data Source=HP201-1;Initial Catalog=Student;Integrated Security=SSPI;";
 
-            string strConn1 = "Data Source=(localhost);Inital Catalog=Student;User ID=sa;Password=''123";
-            
+             string strConn1 = "Data Source=(localhost);Inital Catalog=Student;User ID=sa;Password=''123";
+              */
             //创建连接对象
             //打开指定的数据源
             SqlConnection con = new SqlConnection(strConn);
             try
             {
                 con.Open();//打开连接
-         
                 Console.WriteLine("打开连接");
             }
             catch (Exception ex)
