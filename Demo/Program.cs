@@ -27,15 +27,21 @@ namespace Demo
             string strConn1 = "Data Source=(localhost);Inital Catalog=Student;User ID=sa;Password=''123";
             
             //创建连接对象
+            //打开指定的数据源
             SqlConnection con = new SqlConnection(strConn);
             try
             {
-            con.Open();
-            Console.WriteLine("打开连接");
+                con.Open();//打开连接
+         
+                Console.WriteLine("打开连接");
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                con.Close();//关闭连接
             }
         }
     }
