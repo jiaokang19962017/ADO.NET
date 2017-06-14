@@ -53,9 +53,18 @@ namespace Demo
                   cmd.Parameters[1].Value = password;*/
 
                 //第三种方式
-                cmd.Parameters.AddWithValue("@userid", username);
-                cmd.Parameters.AddWithValue("@password", password);
+                /* cmd.Parameters.AddWithValue("@userid", username);
+                 cmd.Parameters.AddWithValue("@password", password);*/
 
+                //第四种方式
+                SqlParameter[] param = new SqlParameter[]
+                {
+                  //  new SqlParameter("@urseid",SqlDbType.VarChar,20) { Value=username},
+                    //new SqlParameter("@password",SqlDbType.VarChar,20) { Value=password},
+                    new SqlParameter("@userid",username),
+                    new SqlParameter("@password",password),
+                };
+                cmd.Parameters.AddRange(param);
 
                 con.Open();
                 int count = Convert.ToInt32(cmd.ExecuteScalar());
