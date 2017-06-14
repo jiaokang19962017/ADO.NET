@@ -11,9 +11,9 @@ namespace Demo
     class Program
     {
 
-     //设置为只读
-      private static readonly string strConn = ConfigurationManager.ConnectionStrings["strConn"].ToString();
-        static void Main(string[] args)
+        //设置为只读
+        private static readonly string strConn = ConfigurationManager.ConnectionStrings["strConn"].ToString();
+        static void Main1(string[] args)
         {
             #region 插入数据
 
@@ -140,14 +140,152 @@ namespace Demo
             #endregion
 
             #region close()和dispose()的区别
-            SqlConnection con = new SqlConnection(strConn);
-            con.Open();
-            con.Close();
+            /*  SqlConnection con = new SqlConnection(strConn);
+              con.Open();
+              con.Close();*/
+            #endregion
+
+
+            #region usring{}案例
+            /*   using (SqlConnection con =new SqlConnection(strConn))
+               {
+                   string sql = "select stuname from students where stuid='s1001'";
+                   using (SqlCommand cmd = new SqlCommand(sql,con))
+                   {
+                       con.Open();
+                       string strname = Convert.ToString(cmd.ExecuteScalar());
+                       Console.WriteLine(strname);
+                   }
+
+               }*/
+            #endregion
+
+
+            #region ExecuteDataReader()返回多条记录(多行多列)
+            /*    using (SqlConnection con = new SqlConnection(strConn))
+                {
+                    string sql = @"select stuid,stuname,stuage,deptname
+                                        from students stu inner join department dep 
+                                        on stu.deptid=dep.deptid";
+                    using (SqlCommand cmd = new SqlCommand(sql,con))
+                    {
+                        con.Open();
+                      SqlDataReader dr=  cmd.ExecuteReader();//查询多行多列的结果,返回的是sqlDatareader的对象
+                          /*1.cmd.ExecuteReader()查询的是数据库服务器中的数据,先保存到内存中
+                      * 2.创建一个sqldatareadr对象dr来接收内存中的数据
+                      * 3.读取dr中的数据,采用只读,只进的方式来读取数据,并且是一条一条的读取
+                      * 4.读取之前,先判断dr中有没有数据,使用hasrow这个属性来判断是否存在数据,如果有数据,返回true
+                      * 5.使用while循环来读取,具体实现采用dr.read()这个方法来读取,如果存在数据,则返回true,继续执行下一条信息,否则返回false,结束
+                      * 6.使用for循环将每一列每一行的数据读取出来
+                                */
+            /* if (dr.HasRows)
+             {
+                 while (dr.Read())
+                 {
+                    /* for (int i = 0; i <dr.FieldCount; i++)
+                     {
+                         Console.Write(dr[i].ToString() + "\t");
+                         Console.WriteLine();
+                     }*/
+
+            /*
+          }
+      }
+  }*/
+
+            #endregion
+
+            #region 泛型集合接收数据
+            List<Student> lstudent = new List<Student>();//定义一个泛型集合,来存放从dr中获取的数据
+             
+              using (SqlConnection con = new SqlConnection(strConn))
+               {
+                   string sql = @"select stuid,stuname,stusex,stuage,deptid
+                                       from students";
+                   using (SqlCommand cmd = new SqlCommand(sql, con))
+                   {
+                       con.Open();
+                       SqlDataReader dr = cmd.ExecuteReader();
+                    if (dr.HasRows)
+                    {
+                        while (dr.Read())
+                        {
+                            //通过列名
+                            /*  Student stu = new Student();
+                              stu.StuId = dr["stuid"].ToString();
+                              stu.StuName = dr[1].ToString();
+                              stu.StuSex = Convert.ToBoolean(dr["stusex"]);
+                              stu.StuAge = Convert.ToInt32(dr["stuage"]);
+                              stu.DeptId = Convert.ToInt32(dr["deptid"]);*/
+
+                            //通过索引
+                            /* Student stu = new Student();
+                             stu.StuId = dr[0].ToString();
+                             stu.StuName = dr[1].ToString();
+                             stu.StuSex = Convert.ToBoolean(dr[2]);
+                             stu.StuAge = Convert.ToInt32(dr[3]);
+                             stu.DeptId = Convert.ToInt32(dr[4]);*/
+
+                            Student stu = new Student();
+                            stu.StuId = dr.GetString(0);
+                            stu.StuName = dr.GetString(1);
+                            stu.StuSex = dr.GetBoolean(2);
+                            stu.StuAge = dr.GetInt32(3);
+                            stu.DeptId = dr.GetInt32(4);
+                            lstudent.Add(stu);//将student对象添加到  List<Student> 中
+                        }
+                        dr.Close();
+                    }
+                    //循环遍历
+                    foreach (Student stu in lstudent)
+                    {
+                        Console.WriteLine(stu.StuId+"\t"+stu.StuName+"\t"+(stu.StuSex==true?"男":"女")+"\t"+stu.StuAge+"\t"+stu.DeptId);
+                    }
+                   }
+               }
+            #endregion
+            #region 练习
+            /*using (SqlConnection con = new SqlConnection(strConn))
+            {
+                string sql = @"select
+                                                    stu.stuid,
+                                                    stuname,
+                                                    stusex,
+                                                    deptname,
+                                                    examscore,
+                                                    coursename
+                                      from       Students stu inner join Score sco on stu.stuid=sco.StuId inner join Department dep
+                                                    on stu.DeptId=dep.DeptId inner join Course cou on cou.CourseId=sco.CourseId";
+                SqlCommand cmd = new SqlCommand(sql, con);
+                con.Open();
+               SqlDataReader sr= cmd.ExecuteReader();
+                if (sr.HasRows)
+                {
+                    while (sr.Read())
+                    {
+                        for (int i = 0; i < sr.FieldCount; i++)
+                        {
+                            Console.Write(sr[i]+"\t");
+                          
+                        }
+                              Console.WriteLine();
+                    }
+                }
+                con.Close();
+            }*/
             #endregion
         }
     }
 }
+  
    
 /*总结:
  ExecuteNonQuery()执行增删改操作,返回受影响行数
- ExecuteScalar()用于执行查询单个结果,一行一列,返回是object类型*/
+ ExecuteScalar()用于执行查询单个结果,一行一列,返回是object类型
+ 
+    executeReader()特点
+    1.只读,只进,只能通过sqldatareader()对象dr读取数据
+    不能修改数据,只能向前读取数据,不能向后,也不能跳跃
+    2.使用sqldatareader对象dr时,必须保证连接打开状态,使用dr后,必须关闭dr*/
+     
+     
