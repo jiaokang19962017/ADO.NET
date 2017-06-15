@@ -164,39 +164,198 @@ namespace Demo
             #region 断开连接类
             //1.通过连接字符串查询写语句
             //编写sql语句
-          //  string sql = "select * from Students";
+            //  string sql = "select * from Students";
             //创建 SqlDataAdapter对象
             //SqlDataAdapter da = new SqlDataAdapter(sql, strConn);
-            using (SqlConnection con = new SqlConnection(strConn))
-            {
-                string strsql = "select * from students";
-                
-                //SqlDataAdapter是;连接数据源和数据集的中间桥梁,也称为数据适配器
-                //其中有个Fill()方法,是用来填充数据集,此时就断开了连接,将结果保存到数据集中
-                //DataSet:数据集,也可以理解成脱机数据库,里面可以添加多个DataTable
-                //DataSet他是存放于服务器的内存当中
+            /* using (SqlConnection con = new SqlConnection(strConn))
+             {
+                 string strsql = "select * from students";
 
-                //创建一个 SqlDataAdapter对象
-                SqlDataAdapter da = new SqlDataAdapter(strsql, con);
-                SqlDataAdapter da1 = new SqlDataAdapter(strsql, con);
-                con.Open();
-                //创建一个DataSet的实例
-                DataSet ds = new DataSet();
-                //da.Fill(ds);
-                da.Fill(ds, "StuTable");//将查询结果填充到数据集中(ds),并指定一个虚拟的表StuTable用来存放数据
-                DataTable dt = ds.Tables["StuTable"];
-                for (int i = 0; i<dt.Rows.Count; i++)//循环每一行
+                 //SqlDataAdapter是;连接数据源和数据集的中间桥梁,也称为数据适配器
+                 //其中有个Fill()方法,是用来填充数据集,此时就断开了连接,将结果保存到数据集中
+                 //DataSet:数据集,也可以理解成脱机数据库,里面可以添加多个DataTable
+                 //DataSet他是存放于服务器的内存当中
+
+                 //创建一个 SqlDataAdapter对象
+                 SqlDataAdapter da = new SqlDataAdapter(strsql, con);
+                 SqlDataAdapter da1 = new SqlDataAdapter(strsql, con);
+                 con.Open();
+                 //创建一个DataSet的实例
+                 DataSet ds = new DataSet();
+                 //da.Fill(ds);
+                 da.Fill(ds, "StuTable");//将查询结果填充到数据集中(ds),并指定一个虚拟的表StuTable用来存放数据
+                 DataTable dt = ds.Tables["StuTable"];
+                 for (int i = 0; i<dt.Rows.Count; i++)//循环每一行
+                 {
+                   //  DataRow dr = dt.Rows[i];//取出每行数据
+                     for (int j = 0; j < dt.Columns.Count; j++)//循环每一列
+                     {
+                         Console.Write(dt.Rows[i][j] +"\t");//取出当前行每一列的数据
+                     }
+                     Console.Write("\n");
+                 }
+                 Console.WriteLine();
+             }*/
+
+
+            //.通过sqlCommand对象来创建
+            /*     using (SqlConnection con = new SqlConnection(strConn))
+                 {
+                     string sql = "select stuid,stuname,stuage,deptid from students";
+                     SqlCommand cmd = new SqlCommand(sql, con);
+                     SqlDataAdapter da = new SqlDataAdapter(cmd);//调用带有命令对象参数的构造函数
+                     con.Open();
+                     DataSet ds = new DataSet();
+                     da.Fill(ds);
+                     for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                     {
+                         DataRow dr = ds.Tables[0].Rows[i];
+                         Console.WriteLine(dr["stuid"].ToString()+"\t"+dr["stuname"]+"\t"+dr["stuage"]+"\t"+dr["deptid"]);
+                     }
+                 }*/
+            #endregion
+
+            #region ado.net的事务处理
+            #region 使用事务
+            /*  using (SqlConnection con = new SqlConnection(strConn))
+              {
+                  //string sql = "insert into Course(CourseId,CourseName,Credit) values(@courseid,@coursename,@credit)";
+                  StringBuilder sb = new StringBuilder();
+                  //sb.AppendLine("insert into ");
+                  //sb.AppendLine(" Course ");
+                  //sb.AppendLine(" (CourseId,CourseName,Credit) ");
+                  //sb.AppendLine(" values ");
+                  //sb.AppendLine("  (@courseid,@coursename,@credit)");
+                  Console.WriteLine("1.学号2.姓名");
+                  int type = Convert.ToInt32(Console.ReadLine());
+                  string keyword = string.Empty;
+                  switch (type)
+                  {
+                      case 1:
+                          Console.WriteLine("请输入学号:");
+                          keyword = Console.ReadLine();
+                          break;
+                      case 2:
+                          Console.WriteLine("请输入姓名:");
+                          keyword = Console.ReadLine();
+                          break;
+                  }
+                  string option = "s1001";
+
+                  sb.AppendLine("select ");
+                  sb.AppendLine("         stuid,");
+                  sb.AppendLine("         stuname,");
+                  sb.AppendLine("         stuage");
+                  sb.AppendLine("from ");
+                  sb.AppendLine("         students");
+                  sb.AppendLine("where ");
+                  if (type == 1)
+                  {
+                      //学号
+                      sb.AppendLine("stuid='" + keyword + "'");
+                  }
+                     else  if (type == 2)
+                  {
+                      //学号
+                      sb.AppendLine("stuname='" + keyword + "'");
+                  }
+                  string strsql = sb.ToString();
+                  SqlCommand cmd = new SqlCommand(strsql, con);
+                  SqlDataAdapter da = new SqlDataAdapter(cmd);
+                  con.Open();
+                  DataTable dt = new DataTable();
+                  da.Fill(dt);
+                  for (int i = 0; i < dt.Rows.Count; i++)//循环每一行
+                  {
+
+                      for (int j = 0; j < dt.Columns.Count; j++)//循环每一列
+                      {
+                          Console.Write(dt.Rows[i][j] + "\t");//取出当前行每一列的数据
+                      }
+                      Console.Write("\n");
+                  }*/
+
+            /*  using (SqlConnection con = new SqlConnection(strConn))
+              {
+                  string sql = "insert into Course(CourseId,CourseName,Credit) values(@courseid,@coursename,@credit)";
+
+                  SqlCommand cmd = new SqlCommand(sql, con);
+                  SqlParameter[] parm = new SqlParameter[]
+                  {
+                          new SqlParameter("@courseid","c007"),
+                          new SqlParameter("@coursename","大数据"),
+                          new SqlParameter("@credit",10)
+                  };
+                  SqlCommand cmd1 = new SqlCommand(sql, con);
+                  SqlParameter[] parm1 = new SqlParameter[]
                 {
-                  //  DataRow dr = dt.Rows[i];//取出每行数据
-                    for (int j = 0; j < dt.Columns.Count; j++)//循环每一列
-                    {
-                        Console.Write(dt.Rows[i][j] +"\t");//取出当前行每一列的数据
-                    }
-                    Console.Write("\n");
-                }
-                Console.WriteLine();
+                          new SqlParameter("@courseid","c008"),
+                          new SqlParameter("@coursename","云计划"),
+                          new SqlParameter("@credit",9)
+                };
+
+                  con.Open();
+                  SqlTransaction tran = con.BeginTransaction();//开启事务
+                  cmd.Transaction = tran;
+
+                  try
+                  {
+                      cmd.Parameters.AddRange(parm);
+
+                      cmd.ExecuteNonQuery();//第一条sql语句执行
+                      cmd.Parameters.Clear();
+                      cmd.Parameters.AddRange(parm1);
+                      cmd.ExecuteNonQuery();
+
+                      tran.Commit();//提交事务
+                      Console.WriteLine("新增成功");
+
+                  }
+                  catch (SqlException ex)
+                  {
+                      //3.如果有异常,回滚事务
+                      tran.Rollback();
+                      Console.WriteLine(ex.Message);
+
+                  }
+              }*/
+            #endregion
+
+            #region 事务处理案例2
+            Console.WriteLine("请输入系别id:");
+            string courseid = Console.ReadLine();
+            Console.WriteLine("请输入系别名称:");
+            string couresename = Console.ReadLine();
+            Console.WriteLine("请输入学分:");
+            string credit = Console.ReadLine();
+            string sql = @"insert into Department(depaname)
+                                                    values(@deptname)";
+           /* SqlParameter[] parm = new SqlParameter[] 
+            {
+                new SqlParameter("@deptname",deptname)
+            };*/
+
+            try
+            {
+                //开启事务
+                Common.BeginTransaction();
+                Common.ExecuteTransaction(sql, new SqlParameter("@courseid","c001"),
+                                                                    new SqlParameter("@coursename","dota2"),
+                                                                    new SqlParameter("@credit",5));
+                Common.ExecuteTransaction(sql, new SqlParameter("@courseid", "c001"),
+                                                                    new SqlParameter("@coursename", "csgo"),
+                                                                    new SqlParameter("@credit", 5));
+                Common.CommitTransaction();
+                //提交事务
+            }
+            catch (SqlException ex)
+            {
+                //回滚事务
+                Common.RollBackTranscation();
+                Console.WriteLine(ex.Message);
             }
            
+            #endregion
             #endregion
         }
     }
