@@ -162,7 +162,41 @@ namespace Demo
             #endregion
 
             #region 断开连接类
+            //1.通过连接字符串查询写语句
+            //编写sql语句
+          //  string sql = "select * from Students";
+            //创建 SqlDataAdapter对象
+            //SqlDataAdapter da = new SqlDataAdapter(sql, strConn);
+            using (SqlConnection con = new SqlConnection(strConn))
+            {
+                string strsql = "select * from students";
+                
+                //SqlDataAdapter是;连接数据源和数据集的中间桥梁,也称为数据适配器
+                //其中有个Fill()方法,是用来填充数据集,此时就断开了连接,将结果保存到数据集中
+                //DataSet:数据集,也可以理解成脱机数据库,里面可以添加多个DataTable
+                //DataSet他是存放于服务器的内存当中
 
+                //创建一个 SqlDataAdapter对象
+                SqlDataAdapter da = new SqlDataAdapter(strsql, con);
+                SqlDataAdapter da1 = new SqlDataAdapter(strsql, con);
+                con.Open();
+                //创建一个DataSet的实例
+                DataSet ds = new DataSet();
+                //da.Fill(ds);
+                da.Fill(ds, "StuTable");//将查询结果填充到数据集中(ds),并指定一个虚拟的表StuTable用来存放数据
+                DataTable dt = ds.Tables["StuTable"];
+                for (int i = 0; i<dt.Rows.Count; i++)//循环每一行
+                {
+                  //  DataRow dr = dt.Rows[i];//取出每行数据
+                    for (int j = 0; j < dt.Columns.Count; j++)//循环每一列
+                    {
+                        Console.Write(dt.Rows[i][j] +"\t");//取出当前行每一列的数据
+                    }
+                    Console.Write("\n");
+                }
+                Console.WriteLine();
+            }
+           
             #endregion
         }
     }
