@@ -122,12 +122,12 @@ namespace Demo
              3.usring{}代表除了作用域之后,会默认调用当前对象的dispose()方法,将ConnectionString设置为空
              dispose是对于对象自身而言的,close()是对于数据库本身而言的*/
 
-            /*使用usring表示在除了作用域之后,自动调用dispose方法,释放对象,usring只能用在实现了IDisposeable接口的类上
+            /*使用usring表示在出了作用域之后,自动调用dispose方法,释放对象,usring只能用在实现了IDisposeable接口的类上
              * 括号里定义的con只在usring{}这对括号内有效,除了后就没用了
              * 
              * usring和try-catch finally区别
              * 共同:都可以释放资源
-             * 不同:usring在超出返回后主动释放资源,try-catch finally需要写释放代码
+             * 不同:usring在超出返回后主动释放资源,try-catch finally需要手动写释放代码
              * 总结:如果不需要捕获异常,可以使用usring,否则用try-catch finally
              
              */
